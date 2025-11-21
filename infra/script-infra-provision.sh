@@ -6,10 +6,9 @@ RG_NAME="rg-mindcare"
 LOCATION="brazilsouth"
 DB_NAME="mindcare"
 DB_USER="mindcareadmin"
-DB_PASSWORD="$(openssl rand -base64 16)"
+DB_PASSWORD="$(openssl rand -base64 12)"
 DB_SERVER="mindcare-db-server$RANDOM"
-ACI_APP_NAME="mindcare-app-aci"
-ACI_DB_NAME="mindcare-db-aci"
+ACI_NAME="mindcare-app-aci"
 
 echo "=== Criando Resource Group ==="
 az group create --name $RG_NAME --location $LOCATION

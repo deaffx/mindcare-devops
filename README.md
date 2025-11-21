@@ -91,6 +91,7 @@ Crie arquivo `.env` ou configure no sistema:
 
 ```properties
 GROQ_API_KEY=sua-chave-groq-aqui
+JWT_SECRET=sua-chave-jwt-aqui
 ```
 
 **Obter chave Groq:** https://console.groq.com/ → API Keys
@@ -101,11 +102,10 @@ GROQ_API_KEY=sua-chave-groq-aqui
 .\gradlew.bat bootRun
 ```
 
-**Acesso:** http://localhost:8080
+**Acesso Local:** http://localhost:8080
 
 ---
 
-## 📚 API REST - Principais Endpoints
 ## 📚 Exemplos de Operações CRUD (JSON)
 
 ### Usuários
@@ -191,6 +191,123 @@ GROQ_API_KEY=sua-chave-groq-aqui
 ```json
 {
   "message": "Meta removida com sucesso"
+}
+```
+
+**Create (POST /metas)**
+```json
+{
+  "usuario_id": 1,
+  "titulo": "10 dias sem fumar",
+  "descricao": "Meta para parar de fumar por 10 dias",
+  "categoria": "HABITO",
+  "tipo": "CONSECUTIVO",
+  "duracao_dias": 10,
+  "data_inicio": "2025-11-21"
+}
+```
+
+**Read (GET /metas/{id})**
+```json
+{
+  "id": 5,
+  "usuario_id": 1,
+  "titulo": "10 dias sem fumar",
+  "descricao": "Meta para parar de fumar por 10 dias",
+  "categoria": "HABITO",
+  "tipo": "CONSECUTIVO",
+  "duracao_dias": 10,
+  "dias_consecutivos": 3,
+  "status": "ATIVA",
+  "data_inicio": "2025-11-21",
+  "data_fim": null,
+  "criado_em": "2025-11-21T10:00:00Z"
+}
+```
+
+**Update (PUT /metas/{id})**
+```json
+{
+  "titulo": "15 dias sem fumar",
+  "duracao_dias": 15
+}
+```
+
+### Progresso das Metas
+
+**Create (POST /progressos-meta)**
+```json
+{
+  "meta_id": 5,
+  "data": "2025-11-22",
+  "concluido": true,
+  "observacao": "Mais um dia vencido!"
+}
+```
+
+**Read (GET /progressos-meta/{id})**
+```json
+{
+  "id": 12,
+  "meta_id": 5,
+  "data": "2025-11-22",
+  "concluido": true,
+  "observacao": "Mais um dia vencido!",
+  "criado_em": "2025-11-22T18:00:00Z"
+}
+```
+
+**Update (PUT /progressos-meta/{id})**
+```json
+{
+  "concluido": false,
+  "observacao": "Dia não concluído"
+}
+```
+
+**Delete (DELETE /progressos-meta/{id})**
+```json
+{
+  "message": "Progresso removido com sucesso"
+}
+```
+
+### Mensagens IA
+
+**Create (POST /mensagens-ia)**
+```json
+{
+  "usuario_id": 1,
+  "tipo": "MOTIVACIONAL",
+  "conteudo": "Você está indo muito bem!",
+  "contexto": "meta"
+}
+```
+
+**Read (GET /mensagens-ia/{id})**
+```json
+{
+  "id": 20,
+  "usuario_id": 1,
+  "tipo": "MOTIVACIONAL",
+  "conteudo": "Você está indo muito bem!",
+  "contexto": "meta",
+  "criado_em": "2025-11-21T19:00:00Z",
+  "lida": false
+}
+```
+
+**Update (PUT /mensagens-ia/{id})**
+```json
+{
+  "lida": true
+}
+```
+
+**Delete (DELETE /mensagens-ia/{id})**
+```json
+{
+  "message": "Mensagem removida com sucesso"
 }
 ```
 
