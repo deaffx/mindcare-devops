@@ -86,6 +86,16 @@ stages:
         dependsOn: gradleBuild
         condition: succeeded()
         steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download build artifact (MindCareApp)'
+            inputs:
+              buildType: 'current'
+              artifact: 'MindCareApp'
+              targetPath: '$(Pipeline.Workspace)/artifact'
+          - script: |
+              echo "=== Files in $(Pipeline.Workspace)/artifact ==="
+              ls -lah $(Pipeline.Workspace)/artifact
+            displayName: 'List artifact files (debug)'
           - task: Docker@2
             inputs:
               command: login
@@ -93,7 +103,10 @@ stages:
           - task: Docker@2
             inputs:
               command: buildAndPush
+              containerRegistry: ACR-ServiceConnection
               repository: $(projectName)
+              dockerfile: Dockerfile
+              buildContext: $(Pipeline.Workspace)/artifact
               tags: |
                 $(imageTag)
                 $(Build.BuildId)
