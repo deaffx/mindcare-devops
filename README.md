@@ -16,7 +16,6 @@
 
 ![Arquitetura do Projeto](./arquitetura.png)
 
-
 ## 📋 Sobre o Projeto
 
 Plataforma web Full MVC focada em bem-estar emocional no ambiente de trabalho. Combina registro de humor, gestão de metas e assistente virtual com IA para promover saúde mental e produtividade.
