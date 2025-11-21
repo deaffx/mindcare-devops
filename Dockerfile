@@ -16,7 +16,7 @@ WORKDIR /app
 RUN addgroup -S spring && adduser -S spring -G spring
 
 # Copiar JAR já compilado (build feito localmente pelo script)
-COPY mindcare.jar app.jar
+COPY build/libs/mindcare-1.0.0.jar app.jar
 
 # Mudar ownership para usuário spring
 RUN chown -R spring:spring /app
