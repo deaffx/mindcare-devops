@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+<body>
+    <!-- Navbar -->
+    <nav th:replace="~{fragments/header :: navbar}"></nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Header com saudação -->
+            <div class="dashboard-header">
+                <h1 class="greeting">
+                    <span th:text="|#{dashboard.saudacao.manha(${usuario.nome})}|">Bom dia, Usuário! 👋</span>
+                </h1>
+                <div class="frase-dia-box">
+                    <span class="frase-dia-label">Frase do dia:</span>
+                    <span class="frase-dia-text" th:text="${fraseDoDia}">Acredite em você! Cada dia é uma nova chance.</span>
+                </div>
+            </div>
+
+            <!-- Cards principais -->
+            <div class="dashboard-grid">
+                <!-- Humor do dia -->
+                <div class="card card-humor">
+                    <div class="card-header">
+                        <i class="fas fa-smile-beam"></i>
+                        <h3 th:text="#{dashboard.humor.titulo}">Humor de Hoje</h3>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${ultimosHumores != null and !ultimosHumores.empty}">
+                            <div class="mood-display">
+                                <span class="mood-emoji" th:text="${ultimosHumores[0].nivelHumor == 5 ? '😄' : (ultimosHumores[0].nivelHumor == 4 ? '😊' : (ultimosHumores[0].nivelHumor == 3 ? '😐' : (ultimosHumores[0].nivelHumor == 2 ? '😟' : '😢')))}">😊</span>
+                                <span class="mood-level" th:text="${ultimosHumores[0].nivelHumor} + '/5'">4/5</span>
+                            </div>
+                            <p class="mood-emotion" th:text="${ultimosHumores[0].emocao}">Feliz</p>
+                        </div>
+                        <div th:unless="${ultimosHumores != null and !ultimosHumores.empty}">
+                            <p class="empty-state" th:text="#{humor.vazia}">Ainda não registrado hoje</p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/humor/novo}" class="btn btn-small">
+                            <i class="fas fa-plus"></i>
+                            <span th:text="#{humor.registrar.agora}">Registrar agora</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Metas ativas -->
+                <div class="card card-metas">
+                    <div class="card-header">
+                        <i class="fas fa-bullseye"></i>
+                        <h3 th:text="#{dashboard.metas.titulo}">Metas Ativas</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-number" th:text="${metasAtivas != null ? metasAtivas.size() : 0}">0</div>
+                        <p th:text="#{dashboard.metas.andamento}">Metas em andamento</p>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/metas}" class="btn btn-small">
+                            <i class="fas fa-arrow-right"></i>
+                            <span th:text="#{meta.ver.todas}">Ver todas</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mensagem da IA -->
+                <div class="card card-ia">
+                    <div class="card-header">
+                        <i class="fas fa-robot"></i>
+                        <h3 th:text="#{dashboard.mensagem.titulo}">Mensagem da IA</h3>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${mensagensNaoLidas != null and !mensagensNaoLidas.empty}">
+                            <div class="ia-message">
+                                <p th:text="${mensagensNaoLidas[0].conteudo}">Continue firme! Você está indo muito bem! 💪</p>
+                            </div>
+                        </div>
+                        <div th:unless="${mensagensNaoLidas != null and !mensagensNaoLidas.empty}">
+                            <p class="empty-state" th:text="#{dashboard.mensagem.vazia}">Nenhuma mensagem nova</p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/chat}" class="btn btn-small">
+                            <i class="fas fa-comments"></i>
+                            <span th:text="#{chat.conversar}">Conversar</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Estatísticas -->
+                <div class="card card-stats">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line"></i>
+                        <h3 th:text="#{dashboard.estatisticas.titulo}">Suas Estatísticas</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stat-item">
+                            <span class="stat-label" th:text="#{dashboard.media.humor}">Média de humor (7 dias)</span>
+                            <span class="stat-value" th:text="${#numbers.formatDecimal(mediaHumorSemanal != null ? mediaHumorSemanal : 0.0, 1, 2)}">0.00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label" th:text="#{dashboard.metas.concluidas}">Metas concluídas</span>
+                            <span class="stat-value" th:text="${totalMetasConcluidas != null ? totalMetasConcluidas : 0}">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label" th:text="#{dashboard.sequencia.atual}">Sequência atual</span>
+                            <span class="stat-value">
+                                <span th:text="(${sequenciaAtual != null ? sequenciaAtual : 0}) + ' ' + #{dashboard.dias}">0 dias</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações rápidas -->
+            <div class="quick-actions">
+                <h2 th:text="#{dashboard.acoes.titulo}">Ações Rápidas</h2>
+                <div class="actions-grid">
+                    <a th:href="@{/humor/novo}" class="action-card">
+                        <i class="fas fa-smile"></i>
+                        <h4 th:text="#{dashboard.acao.humor.titulo}">Registrar Humor</h4>
+                        <p th:text="#{dashboard.acao.humor.desc}">Como você está hoje?</p>
+                    </a>
+                    <a th:href="@{/metas/nova}" class="action-card">
+                        <i class="fas fa-flag"></i>
+                        <h4 th:text="#{dashboard.acao.meta.titulo}">Nova Meta</h4>
+                        <p th:text="#{dashboard.acao.meta.desc}">Defina um novo objetivo</p>
+                    </a>
+                    <a th:href="@{/chat}" class="action-card">
+                        <i class="fas fa-robot"></i>
+                        <h4 th:text="#{dashboard.acao.chat.titulo}">Falar com MindBot</h4>
+                        <p th:text="#{dashboard.acao.chat.desc}">Converse sobre motivação</p>
+                    </a>
+                    <a th:href="@{/humor}" class="action-card">
+                        <i class="fas fa-history"></i>
+                        <h4 th:text="#{dashboard.acao.historico.titulo}">Ver Histórico</h4>
+                        <p th:text="#{dashboard.acao.historico.desc}">Acompanhe sua evolução</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

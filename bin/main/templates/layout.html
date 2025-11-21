@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' - MindCare'">MindCare</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <i class="fas fa-brain"></i>
+                <span>MindCare</span>
+            </div>
+            
+            <div class="navbar-menu" th:if="${#authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/dashboard}" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span th:text="#{nav.dashboard}">Dashboard</span>
+                </a>
+                <a th:href="@{/humor}" class="nav-item">
+                    <i class="fas fa-smile"></i>
+                    <span th:text="#{nav.humor}">Humor</span>
+                </a>
+                <a th:href="@{/metas}" class="nav-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span th:text="#{nav.metas}">Metas</span>
+                </a>
+                <a th:href="@{/chat}" class="nav-item">
+                    <i class="fas fa-robot"></i>
+                    <span th:text="#{nav.chatbot}">Chat</span>
+                </a>
+                
+                <div class="nav-divider"></div>
+                
+                <a th:href="@{/perfil}" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span th:text="#{nav.perfil}">Perfil</span>
+                </a>
+                <form th:action="@{/logout}" method="post" class="nav-logout">
+                    <button type="submit" class="nav-item logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span th:text="#{nav.sair}">Sair</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Flash Messages -->
+            <div th:if="${mensagemSucesso}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${mensagemSucesso}"></span>
+            </div>
+            
+            <div th:if="${mensagemErro}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${mensagemErro}"></span>
+            </div>
+            
+            <div th:if="${mensagemIA}" class="alert alert-ia">
+                <i class="fas fa-robot"></i>
+                <span th:text="${mensagemIA}"></span>
+            </div>
+
+            <!-- Page Content -->
+            <div layout:fragment="content">
+                <p>Conteúdo da página</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 MindCare - Seu bem-estar é nossa prioridade 💚</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+</html>

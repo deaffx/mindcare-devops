@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments/head :: head('Meu Perfil')}"></head>
+<body>
+    <nav th:replace="~{fragments/header :: navbar}"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <h1 th:text="#{perfil.titulo}">Meu Perfil</h1>
+            
+            <div class="card">
+                <div class="card-body">
+                    <div class="stat-item">
+                        <span class="stat-label" th:text="#{perfil.nome}">Nome</span>
+                        <span class="stat-value" th:text="${usuario.nome}">Nome</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label" th:text="#{perfil.email}">Email</span>
+                        <span class="stat-value" th:text="${usuario.email}">email@exemplo.com</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label" th:text="#{perfil.cargo}">Cargo</span>
+                        <span class="stat-value" th:text="${usuario.cargo}">Cargo</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label" th:text="#{perfil.idioma}">Idioma</span>
+                        <span class="stat-value" th:text="${usuario.preferenciaIdioma}">pt-BR</span>
+                    </div>
+                </div>
+                
+                <div class="card-footer">
+                    <button onclick="abrirModalEditar()" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> <span th:text="#{perfil.editarPerfil}">Editar Perfil</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Edição -->
+    <div id="modalEditar" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 th:text="#{perfil.editarPerfil}">Editar Perfil</h2>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+            <form id="formEditar" onsubmit="salvarPerfil(event)">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                
+                <div class="form-group">
+                    <label for="nome" th:text="#{perfil.nome}">Nome</label>
+                    <input type="text" id="nome" name="nome" class="form-control" 
+                           th:value="${usuario.nome}" required minlength="3">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" th:text="#{perfil.email}">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" 
+                           th:value="${usuario.email}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cargo" th:text="#{perfil.cargo}">Cargo</label>
+                    <input type="text" id="cargo" name="cargo" class="form-control" 
+                           th:value="${usuario.cargo}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="preferenciaIdioma" th:text="#{perfil.idioma}">Idioma</label>
+                    <select id="preferenciaIdioma" name="preferenciaIdioma" class="form-control">
+                        <option value="pt-BR" th:selected="${usuario.preferenciaIdioma == 'pt-BR'}">Português (BR)</option>
+                        <option value="en-US" th:selected="${usuario.preferenciaIdioma == 'en-US'}">English (US)</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" onclick="fecharModal()" class="btn btn-secondary" style="flex: 1;" th:text="#{perfil.cancelar}">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;" th:text="#{perfil.salvar}">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    
+    <script>
+        function fecharModal() {
+            document.getElementById('modalEditar').classList.remove('active');
+        }
+        
+        // Fechar modal ao clicar fora
+        document.getElementById('modalEditar').addEventListener('click', function(e) {
+            if (e.target === this) fecharModal();
+        });
+        
+        async function salvarPerfil(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            const idiomaAnterior = form.querySelector('#preferenciaIdioma').dataset.original;
+            
+            try {
+                const response = await fetch('/perfil/editar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': data._csrf
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    // Se mudou o idioma, recarrega a página para aplicar
+                    if (idiomaAnterior !== data.preferenciaIdioma) {
+                        window.location.href = '/dashboard';
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    const error = await response.text();
+                    alert('Erro ao salvar: ' + error);
+                }
+            } catch (error) {
+                alert('Erro ao salvar perfil');
+            }
+        }
+        
+        // Guardar idioma original ao abrir modal
+        function abrirModalEditar() {
+            const select = document.getElementById('preferenciaIdioma');
+            select.dataset.original = select.value;
+            document.getElementById('modalEditar').classList.add('active');
+        }
+    </script>
+</body>
+</html>

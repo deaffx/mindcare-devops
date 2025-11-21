@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments/head :: head(${meta != null ? 'Editar Meta' : 'Nova Meta'})}"></head>
+<body>
+    <nav th:replace="~{fragments/header :: navbar}"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <h1 th:text="#{${meta != null and meta.id != null ? 'metas.form.editarMeta' : 'metas.form.novaMeta'}}">Nova Meta</h1>
+            
+            <div class="card">
+                <form th:action="${meta != null and meta.id != null ? '/metas/' + meta.id : '/metas'}" method="post" id="metaForm">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    
+                    
+                    <div class="form-group">
+                        <label for="titulo" th:text="#{metas.form.tituloLabel}">Título da Meta</label>
+                        <input type="text" id="titulo" name="titulo" required class="form-control" 
+                        th:value="${meta?.titulo}"
+                        th:placeholder="#{metas.form.tituloPlaceholder}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descricao" th:text="#{metas.form.descricaoLabel}">Descrição</label>
+                        <textarea id="descricao" name="descricao" class="form-control" rows="3" 
+                        th:text="${meta?.descricao}"
+                        th:placeholder="#{metas.form.descricaoPlaceholder}"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="categoria" th:text="#{metas.form.categoriaLabel}">Categoria</label>
+                        <select id="categoria" name="categoria" required class="form-control">
+                            <option value="" th:text="#{metas.form.selecioneCategoria}">Selecione uma categoria</option>
+                            <option value="SAUDE" th:selected="${meta?.categoria?.name() == 'SAUDE'}" th:text="#{metas.categoria.saude}">Saúde</option>
+                            <option value="ALIMENTACAO" th:selected="${meta?.categoria?.name() == 'ALIMENTACAO'}" th:text="#{metas.categoria.alimentacao}">Alimentação</option>
+                            <option value="EXERCICIO" th:selected="${meta?.categoria?.name() == 'EXERCICIO'}" th:text="#{metas.categoria.exercicio}">Exercício</option>
+                            <option value="SONO" th:selected="${meta?.categoria?.name() == 'SONO'}" th:text="#{metas.categoria.sono}">Sono</option>
+                            <option value="FOCO" th:selected="${meta?.categoria?.name() == 'FOCO'}" th:text="#{metas.categoria.foco}">Foco</option>
+                            <option value="HABITO" th:selected="${meta?.categoria?.name() == 'HABITO'}" th:text="#{metas.categoria.habito}">Hábito</option>
+                            <option value="ESTUDO" th:selected="${meta?.categoria?.name() == 'ESTUDO'}" th:text="#{metas.categoria.estudo}">Estudo</option>
+                            <option value="MEDITACAO" th:selected="${meta?.categoria?.name() == 'MEDITACAO'}" th:text="#{metas.categoria.meditacao}">Meditação</option>
+                            <option value="HIDRATACAO" th:selected="${meta?.categoria?.name() == 'HIDRATACAO'}" th:text="#{metas.categoria.hidratacao}">Hidratação</option>
+                            <option value="OUTRO" th:selected="${meta?.categoria?.name() == 'OUTRO'}" th:text="#{metas.categoria.outro}">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo" th:text="#{metas.form.tipoLabel}">Tipo de Meta</label>
+                        <select id="tipo" name="tipo" required class="form-control" onchange="toggleTipoMeta()" th:disabled="${meta != null and meta.id != null}">
+                            <option value="" th:text="#{metas.form.selecioneTipo}">Selecione o tipo</option>
+                            <option value="PRAZO" th:selected="${meta?.tipo?.name() == 'PRAZO'}" th:text="#{metas.form.tipoPrazo}">Meta com Prazo - Atingir objetivo em um período</option>
+                            <option value="CONSECUTIVO" th:selected="${meta?.tipo?.name() == 'CONSECUTIVO'}" th:text="#{metas.form.tipoConsecutivo}">Meta Consecutiva - Manter por dias seguidos</option>
+                        </select>
+                        <small class="form-text text-muted" id="tipoHelp"></small>
+                        <small class="form-text text-muted" th:if="${meta != null and meta.id != null}" th:text="#{metas.form.tipoNaoAlteravel}">O tipo da meta não pode ser alterado após a criação.</small>
+                    </div>
+                    <!-- Campos para Meta com Prazo -->
+                    <div id="camposPrazo" style="display: none;">
+                        <div class="form-group">
+                            <label for="dataFim" th:text="#{metas.form.dataFimLabel}">Data de Conclusão</label>
+                            <input type="date" id="dataFim" name="dataFim" class="form-control"
+                                   th:value="${meta?.dataFim != null ? #temporals.format(meta.dataFim, 'yyyy-MM-dd') : ''}">
+                        </div>
+                    </div>
+                    
+                    <!-- Campos para Meta Consecutiva -->
+                    <div id="camposConsecutivo" style="display: none;">
+                        <div class="form-group">
+                            <label for="diasObjetivo" th:text="#{metas.form.diasConsecutivosLabel}">Quantos dias consecutivos?</label>
+                            <input type="number" id="diasObjetivo" name="diasObjetivo" 
+                                   th:value="${meta?.duracaoDias != null ? meta.duracaoDias : 7}" min="1" class="form-control"
+                                   th:placeholder="#{metas.form.diasConsecutivosPlaceholder}">
+                            <small class="form-text text-muted" th:text="#{metas.form.diasConsecutivosHelp}">
+                                Você precisará fazer check-in todos os dias. Se perder um dia, a contagem reinicia.
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" th:text="#{${meta != null and meta.id != null ? 'metas.form.salvarAlteracoes' : 'metas.form.criarMeta'}}">Criar Meta</button>
+                        <a th:href="@{/metas}" class="btn btn-secondary" th:text="#{metas.form.cancelar}">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+            
+            <script th:inline="javascript">
+                function toggleTipoMeta() {
+                    const tipo = document.getElementById('tipo').value;
+                    const camposPrazo = document.getElementById('camposPrazo');
+                    const camposConsecutivo = document.getElementById('camposConsecutivo');
+                    const tipoHelp = document.getElementById('tipoHelp');
+                    const dataFim = document.getElementById('dataFim');
+                    const diasObjetivo = document.getElementById('diasObjetivo');
+                    
+                    if (tipo === 'PRAZO') {
+                        camposPrazo.style.display = 'block';
+                        camposConsecutivo.style.display = 'none';
+                        dataFim.required = true;
+                        diasObjetivo.required = false;
+                        tipoHelp.textContent = 'Defina uma data limite para atingir sua meta. Ex: "Correr 30 dias até 31/12"';
+                    } else if (tipo === 'CONSECUTIVO') {
+                        camposPrazo.style.display = 'none';
+                        camposConsecutivo.style.display = 'block';
+                        dataFim.required = false;
+                        diasObjetivo.required = true;
+                        tipoHelp.textContent = 'Mantenha um hábito por dias seguidos. Ex: "10 dias sem fumar"';
+                    } else {
+                        camposPrazo.style.display = 'none';
+                        camposConsecutivo.style.display = 'none';
+                        dataFim.required = false;
+                        diasObjetivo.required = false;
+                        tipoHelp.textContent = '';
+                    }
+                }
+                
+                // Inicializa ao carregar a página
+                document.addEventListener('DOMContentLoaded', function() {
+                    toggleTipoMeta();
+                    
+                    // Se estiver editando e o tipo estiver desabilitado, cria um campo hidden
+                    const tipoSelect = document.getElementById('tipo');
+                    if (tipoSelect.disabled) {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'tipo';
+                        hiddenInput.value = tipoSelect.value;
+                        tipoSelect.parentNode.appendChild(hiddenInput);
+                    }
+                });
+            </script>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

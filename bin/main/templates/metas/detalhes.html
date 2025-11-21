@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments/head :: head('Detalhes da Meta')}"></head>
+<body>
+    <nav th:replace="~{fragments/header :: navbar}"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 th:text="#{metas.detalhes.titulo}">Detalhes da Meta</h1>
+                <div class="actions">
+                    <a th:href="@{/metas}" class="btn btn-secondary" th:text="#{metas.detalhes.voltar}">Voltar</a>
+                    <a th:href="@{/metas/{id}/editar(id=${meta.id})}" class="btn btn-primary" th:text="#{metas.detalhes.editar}">Editar</a>
+                </div>
+            </div>
+
+            <div th:if="${mensagemSucesso}" class="alert alert-success" th:text="${mensagemSucesso}"></div>
+            <div th:if="${mensagemErro}" class="alert alert-danger" th:text="${mensagemErro}"></div>
+
+            <div class="card">
+                <h2 th:text="${meta.titulo}">Título da Meta</h2>
+                
+                <div class="meta-info">
+                    <div class="info-item">
+                        <span class="label" th:text="#{metas.detalhes.tipo}">Tipo:</span>
+                        <span class="value badge badge-info" 
+                              th:text="${meta.tipo.name() == 'PRAZO'} ? #{metas.detalhes.tipoPrazo} : #{metas.detalhes.tipoConsecutivo}">
+                            Meta com Prazo
+                        </span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="label" th:text="#{metas.detalhes.categoria}">Categoria:</span>
+                        <span class="value" th:text="${meta.categoria}">SAUDE</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="label" th:text="#{metas.detalhes.status}">Status:</span>
+                        <span class="value badge" 
+                              th:classappend="${meta.status.name() == 'ATIVA' ? 'badge-success' : (meta.status.name() == 'CONCLUIDA' ? 'badge-info' : 'badge-warning')}"
+                              th:text="${meta.status}">ATIVA</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="label" th:text="#{metas.detalhes.descricao}">Descrição:</span>
+                        <p class="value" th:text="${meta.descricao}">Descrição da meta</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="label" th:text="#{metas.detalhes.dataInicio}">Data de Início:</span>
+                        <span class="value" th:text="${#temporals.format(meta.dataInicio, 'dd/MM/yyyy')}">16/11/2025</span>
+                    </div>
+                    
+                    <div class="info-item" th:if="${meta.tipo.name() == 'PRAZO'}">
+                        <span class="label" th:text="#{metas.detalhes.dataFim}">Data de Conclusão:</span>
+                        <span class="value" th:text="${#temporals.format(meta.dataFim, 'dd/MM/yyyy')}">20/02/2026</span>
+                    </div>
+                    
+                    <div class="info-item" th:if="${meta.tipo.name() == 'PRAZO'}">
+                        <span class="label" th:text="#{metas.detalhes.duracao}">Duração:</span>
+                        <span class="value" th:text="${meta.duracaoDias} + ' ' + #{metas.detalhes.dias}">96 dias</span>
+                    </div>
+                    
+                    <div class="info-item" th:if="${meta.tipo.name() == 'PRAZO'}">
+                        <span class="label" th:text="#{metas.detalhes.diasRestantes}">Dias Restantes:</span>
+                        <span class="value" th:text="${meta.diasRestantes} + ' ' + #{metas.detalhes.dias}">96 dias</span>
+                    </div>
+                    
+                    <div class="info-item" th:if="${meta.tipo.name() == 'PRAZO'}">
+                        <span class="label" th:text="#{metas.detalhes.checkpointsConcluidos}">Checkpoints Concluídos:</span>
+                        <span class="value" th:text="${meta.totalCheckpoints}">0</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="label" th:text="#{metas.detalhes.diasConsecutivos}">Dias Consecutivos:</span>
+                        <span class="value dias-consecutivos-destaque">
+                            <i class="fas fa-fire icone-fogo"></i> <span th:text="${meta.diasConsecutivos}">0</span>
+                        </span>
+                    </div>
+                    
+                    <div class="info-item" th:if="${meta.tipo.name() == 'CONSECUTIVO'}">
+                        <span class="label" th:text="#{metas.detalhes.objetivo}">Objetivo:</span>
+                        <span class="value" th:text="${meta.duracaoDias} + ' ' + #{metas.detalhes.diasConsecutivosObjetivo}">10 dias</span>
+                    </div>
+                    
+                    <div class="info-item" th:if="${meta.ultimoCheckin != null}">
+                        <span class="label" th:text="#{metas.detalhes.ultimoCheckin}">Último Check-in:</span>
+                        <span class="value" th:text="${#temporals.format(meta.ultimoCheckin, 'dd/MM/yyyy')}">17/11/2025</span>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <h3><span th:text="#{metas.detalhes.progresso}">Progresso</span>: <span th:text="${meta.progresso} + '%'">0%</span></h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" th:style="'width: ' + ${meta.progresso} + '%'"></div>
+                    </div>
+                </div>
+
+                <div class="actions-section" th:if="${meta.status.name() == 'ATIVA'}">
+                    <!-- Alerta de Check-in Perdido -->
+                    <div th:if="${meta.checkinPerdido}" class="alert alert-warning alerta-checkin-perdido">
+                        <strong><i class="fas fa-exclamation-triangle"></i> <span th:text="#{metas.detalhes.atencao}">Atenção!</span></strong> <span th:text="#{metas.detalhes.alertaPerdido}">Você perdeu um dia! A sequência foi reiniciada. Faça o check-in hoje para começar novamente.</span>
+                    </div>
+                    
+                    <!-- Alerta de Check-in Já Realizado -->
+                    <div th:if="${!meta.podeRealizarCheckin}" class="alert alert-info alerta-checkin-realizado">
+                        <strong><i class="fas fa-check-circle"></i> <span th:text="#{metas.detalhes.checkinRealizado}">Check-in realizado!</span></strong> <span th:text="#{metas.detalhes.alertaRealizado}">Você já fez o check-in hoje. Volte amanhã para continuar sua sequência!</span>
+                    </div>
+                    
+                    <h3 th:if="${meta.tipo.name() == 'CONSECUTIVO'}">
+                        <span th:text="#{metas.detalhes.conseguiuManter(${meta.titulo})}">Conseguiu manter a meta "Meta" hoje?</span>
+                    </h3>
+                    <h3 th:if="${meta.tipo.name() == 'PRAZO'}" th:text="#{metas.detalhes.registrarProgresso}">
+                        Registrar Progresso
+                    </h3>
+                    
+                    <form th:action="@{/metas/{id}/progresso(id=${meta.id})}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <div class="form-group">
+                            <label for="observacao" th:text="#{metas.detalhes.observacao}">Observação (opcional)</label>
+                            <textarea id="observacao" name="observacao" class="form-control" rows="3" 
+                                      th:placeholder="${meta.tipo.name() == 'CONSECUTIVO'} ? #{metas.detalhes.placeholderConsecutivo} : #{metas.detalhes.placeholderPrazo}"></textarea>
+                        </div>
+                        <button type="submit" 
+                                th:class="${meta.podeRealizarCheckin ? 'btn btn-success btn-lg btn-checkin-principal' : 'btn btn-disabled btn-lg btn-checkin-principal'}"
+                                th:disabled="${!meta.podeRealizarCheckin}">
+                            <span th:if="${meta.tipo.name() == 'CONSECUTIVO' and meta.podeRealizarCheckin}">
+                                <i class="fas fa-check"></i> <span th:text="#{metas.detalhes.simConsegui} + ' (' + #{metas.detalhes.dia} + ' ' + ${meta.diasConsecutivos + 1} + ')'">Sim, consegui hoje! (Dia 1)</span>
+                            </span>
+                            <span th:if="${meta.tipo.name() == 'CONSECUTIVO' and !meta.podeRealizarCheckin}">
+                                <i class="fas fa-check-circle"></i> <span th:text="#{metas.feitoHoje}">Feito hoje!</span>
+                            </span>
+                            <span th:if="${meta.tipo.name() == 'PRAZO' and meta.podeRealizarCheckin}">
+                                <i class="fas fa-clipboard-check"></i> <span th:text="#{metas.detalhes.registrarProgressoHoje}">Registrar Progresso de Hoje</span>
+                            </span>
+                            <span th:if="${meta.tipo.name() == 'PRAZO' and !meta.podeRealizarCheckin}">
+                                <i class="fas fa-check-circle"></i> <span th:text="#{metas.feitoHoje}">Feito hoje!</span>
+                            </span>
+                        </button>
+                    </form>
+                    
+                    <p class="texto-motivacional-checkin" th:if="${meta.tipo.name() == 'CONSECUTIVO'}">
+                        <span th:text="#{metas.detalhes.motivacional}">Faça check-in todos os dias para manter sua sequência!</span> <i class="fas fa-fire icone-fogo"></i>
+                    </p>
+                </div>
+
+                <div class="danger-zone">
+                    <h3 th:text="#{metas.detalhes.excluirMeta}">Excluir meta</h3>
+                    <form th:action="@{/metas/{id}/deletar(id=${meta.id})}" method="post" 
+                          th:attr="onsubmit=|return confirm('#{metas.detalhes.confirmarExclusao}');|">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <button type="submit" class="btn btn-danger" th:text="#{metas.detalhes.deletarMeta}">Deletar Meta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Navbar Fragment -->
+    <nav th:fragment="navbar" class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <i class="fas fa-brain"></i>
+                <span>MindCare</span>
+            </div>
+            
+            <div class="navbar-menu">
+                <a th:href="@{/dashboard}" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span th:text="#{nav.dashboard}">Dashboard</span>
+                </a>
+                <a th:href="@{/humor}" class="nav-item">
+                    <i class="fas fa-smile"></i>
+                    <span th:text="#{nav.humor}">Humor</span>
+                </a>
+                <a th:href="@{/metas}" class="nav-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span th:text="#{nav.metas}">Metas</span>
+                </a>
+                <a th:href="@{/chat}" class="nav-item">
+                    <i class="fas fa-robot"></i>
+                    <span th:text="#{nav.chatbot}">Chat</span>
+                </a>
+                
+                <div class="nav-divider"></div>
+                
+                <a th:href="@{/perfil}" class="nav-item">
+                    <i class="fas fa-user"></i>
+                    <span th:text="#{nav.perfil}">Perfil</span>
+                </a>
+                <form th:action="@{/logout}" method="post" class="nav-logout">
+                    <button type="submit" class="nav-item logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span th:text="#{nav.sair}">Sair</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

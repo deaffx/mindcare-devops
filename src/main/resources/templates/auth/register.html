@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - MindCare</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>MindCare</span>
+                </div>
+                <h1>Comece sua jornada</h1>
+                <p>Crie sua conta e cuide do seu bem-estar</p>
+            </div>
+
+            <div th:if="${error}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${error}">Erro</span>
+            </div>
+
+            <form th:action="@{/perform-register}" th:object="${usuario}" method="post" class="auth-form" id="registerForm">
+                <input type="hidden" th:field="*{preferenciaIdioma}" value="pt-BR">
+                
+                <div class="form-group">
+                    <label for="nome">
+                        <i class="fas fa-user"></i>
+                        Nome completo
+                    </label>
+                    <input type="text" th:field="*{nome}" id="nome" required 
+                           placeholder="Seu nome" autocomplete="name" minlength="3">
+                    <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                    </label>
+                    <input type="email" th:field="*{email}" id="email" required 
+                           placeholder="seu@email.com" autocomplete="email">
+                    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="cargo">
+                        <i class="fas fa-briefcase"></i>
+                        Cargo/Profissão (opcional)
+                    </label>
+                    <input type="text" th:field="*{cargo}" id="cargo" 
+                           placeholder="Ex: Desenvolvedor" autocomplete="organization-title">
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">
+                        <i class="fas fa-lock"></i>
+                        Senha
+                    </label>
+                    <input type="password" th:field="*{senha}" id="senha" required 
+                           placeholder="••••••••" autocomplete="new-password" minlength="6">
+                    <small>Mínimo 6 caracteres</small>
+                    <span th:if="${#fields.hasErrors('senha')}" th:errors="*{senha}" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <span>Criar conta</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Já tem uma conta?</p>
+                <a th:href="@{/login}" class="btn btn-outline">
+                    Fazer login
+                </a>
+            </div>
+        </div>
+
+        <div class="auth-bg">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="circle circle-3"></div>
+        </div>
+    </div>
+</body>
+</html>

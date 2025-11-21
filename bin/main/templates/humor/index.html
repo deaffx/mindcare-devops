@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head th:replace="~{fragments/head :: head('Meu Humor')}"></head>
+<body>
+    <nav th:replace="~{fragments/header :: navbar}"></nav>
+
+    <main class="main-content">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h1 th:text="#{humor.historico}">Histórico de Humor</h1>
+                <a th:href="@{/humor/novo}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> <span th:text="#{humor.registrar}">Registrar Humor</span>
+                </a>
+            </div>
+            
+            <div class="card">
+                <div th:if="${registros != null and !registros.empty}">
+                    <div th:each="registro : ${registros}" class="stat-item">
+                        <div>
+                            <span class="mood-emoji" th:text="${registro.nivelHumor == 5 ? '😄' : (registro.nivelHumor == 4 ? '😊' : (registro.nivelHumor == 3 ? '😐' : (registro.nivelHumor == 2 ? '😟' : '😢')))}"></span>
+                            <span th:text="${registro.emocao}">Emoção</span>
+                            <small th:text="${#temporals.format(registro.criadoEm, 'dd/MM/yyyy HH:mm')}">Data</small>
+                        </div>
+                        <span class="stat-value" th:text="${registro.nivelHumor} + '/5'">Nível</span>
+                    </div>
+                </div>
+                <div th:unless="${registros != null and !registros.empty}">
+                    <p class="empty-state" th:text="#{humor.nenhumRegistro}">Nenhum registro encontrado</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
