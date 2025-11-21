@@ -105,7 +105,7 @@ stages:
               command: buildAndPush
               containerRegistry: ACR-ServiceConnection
               repository: $(projectName)
-              dockerfile: Dockerfile
+              dockerfile: dockerfiles/Dockerfile
               buildContext: $(Pipeline.Workspace)/artifact
               tags: |
                 $(imageTag)
